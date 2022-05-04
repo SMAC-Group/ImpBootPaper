@@ -114,7 +114,7 @@ Rcpp::List y_dy_treg(
   );
 }
 
-//' Random generation of t regression responses
+//' @title Random generation of t regression responses
 //'
 //' @param x a matrix of design (first column must be one to include an intercept)
 //' @param beta a vector of regression coefficient
@@ -284,7 +284,7 @@ double mle_treg::f_grad(
   return of;
 }
 
-//' Maximum likelihood estimation of t regression
+//' @title Maximum likelihood estimation of t regression
 //'
 //' @param theta initial values (coef + log-variance + log-dof)
 //' @param y responses
@@ -422,7 +422,7 @@ Rcpp::List of_swiz_treg(
   );
 }
 
-//' SwiZ distribution for t regression
+//' @title SwiZ distribution for t regression
 //'
 //' @param pi initial estimator
 //' @param x matrix of design
@@ -464,7 +464,7 @@ Eigen::MatrixXd swiz_dist_treg(
 // Parametric Bootstrap
 // ------------------
 
-//' Parametric bootstrap distribution for t regression
+//' @title Parametric bootstrap distribution for t regression
 //'
 //' @param start initial estimator
 //' @param x matrix of design
@@ -504,7 +504,7 @@ Eigen::MatrixXd par_bootstrap_mle_treg(
   return boot;
 }
 
-//' Studentized parametric bootstrap distribution for beta regression
+//' @title Studentized parametric bootstrap distribution for beta regression
 //'
 //' @param theta initial estimator
 //' @param boot matrix, parametric bootstrap

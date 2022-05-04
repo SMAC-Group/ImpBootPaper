@@ -120,7 +120,7 @@ Eigen::MatrixXd d_y_betareg(
   return dy;
 }
 
-//' Random generation of beta regression responses
+//' @title Random generation of beta regression responses
 //'
 //' @param x a matrix of design (first column must be one to include an intercept)
 //' @param beta a vector of regression coefficient
@@ -372,7 +372,7 @@ double mle_betareg::f_grad(
   return of;
 }
 
-//' Maximum likelihood estimation of beta regression
+//' @title Maximum likelihood estimation of beta regression
 //'
 //' @param theta initial values (coef + log-precision)
 //' @param y responses
@@ -495,7 +495,7 @@ Eigen::VectorXd swiz_gr_betareg(
   return dp.transpose() * p;
 }
 
-//' A single SwiZ estimation for beta regression
+//' @title A single SwiZ estimation for beta regression
 //'
 //' @param theta initial values (coef + log-precision)
 //' @param pi initial estimator
@@ -524,7 +524,7 @@ Rcpp::List optim_swiz_betareg(
   );
 }
 
-//' SwiZ distribution for beta regression
+//' @title SwiZ distribution for beta regression
 //'
 //' @param pi initial estimator
 //' @param x matrix of design
@@ -562,7 +562,7 @@ Eigen::MatrixXd swiz_dist_betareg(
 // Parametric Bootstrap
 // ------------------
 
-//' Parametric bootstrap distribution for beta regression
+//' @title Parametric bootstrap distribution for beta regression
 //'
 //' @param start initial estimator
 //' @param x matrix of design
@@ -597,7 +597,7 @@ Eigen::MatrixXd par_bootstrap_mle_betareg(
   return boot;
 }
 
-//' Studentized parametric bootstrap distribution for beta regression
+//' @title Studentized parametric bootstrap distribution for beta regression
 //'
 //' @param theta initial estimator
 //' @param boot matrix, parametric bootstrap

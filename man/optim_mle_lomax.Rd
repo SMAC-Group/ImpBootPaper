@@ -9,7 +9,7 @@ optim_mle_lomax(start, y, maxit = 500L, eps_f = 1e-10, eps_g = 1e-10)
 \arguments{
 \item{start}{initial values}
 
-\item{y}{responses}
+\item{y}{observations}
 
 \item{maxit}{maximum number of iteration}
 

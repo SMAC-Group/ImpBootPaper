@@ -70,7 +70,7 @@ Eigen::MatrixXd d_y_lomax(
   return dy;
 }
 
-//' Random generation of Lomax distribution
+//' @title Random generation of Lomax distribution
 //'
 //' @param n sample size
 //' @param b positive parameter
@@ -212,10 +212,10 @@ double mle_lomax::f_grad(
   return of;
 }
 
-//' Maximum likelihood estimation of beta regression
+//' @title Maximum likelihood estimation of beta regression
 //'
 //' @param start initial values
-//' @param y responses
+//' @param y observations
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
@@ -342,7 +342,7 @@ Rcpp::List of_swiz_lomax(
   );
 }
 
-//' SwiZ distribution for Lomax distribution
+//' @title SwiZ distribution for Lomax distribution
 //'
 //' @param pi initial estimator
 //' @param n sample size
@@ -382,7 +382,7 @@ Eigen::MatrixXd swiz_dist_lomax(
 // Parametric Bootstrap
 // ------------------
 
-//' Parametric bootstrap distribution for Lomax distribution
+//' @title Parametric bootstrap distribution for Lomax distribution
 //'
 //' @param start initial estimator
 //' @param n sample size
@@ -420,7 +420,7 @@ Eigen::MatrixXd par_bootstrap_mle_lomax(
   return boot;
 }
 
-//' Studentized parametric bootstrap distribution for beta regression
+//' @title Studentized parametric bootstrap distribution for beta regression
 //'
 //' @param theta initial estimator
 //' @param boot matrix, parametric bootstrap
@@ -467,6 +467,11 @@ Eigen::MatrixXd par_boott_lomax(
 // ------------------
 // For BCa
 // ------------------
+//' @title BCa acceleration parameter for Lomax distribution
+//'
+//' @param start MLE
+//' @param y observations
+//' @param which binary, 0=alpha, 1=lambda
 double acceleration_lomax(
     Eigen::VectorXd& start,
     Eigen::VectorXd& y,
