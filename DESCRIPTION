@@ -1,0 +1,25 @@
+Package: ImpBootPaper
+Type: Package
+Title: Code for the paper on Implicit Bootstrap
+Version: 1.0
+Date: 2022-05-04
+Authors@R: c(
+    person("Samuel", "Orso", email="Samuel.Orso@unige.ch", role=c("aut","cre","cph")),
+    person("Mucyo","Karemera", role="aut"),
+    person("Stéphane", "Guerrier", role=c("aut")),
+    person("Maria-Pia","Victoria-Feser", role="aut")
+    )
+Encoding: UTF-8
+Maintainer: Samuel Orso <Samuel.Orso@unige.ch>
+Depends: R (>= 4.0.0)
+Description: This package contains the code to replicate the numerical studies 
+   presented in the paper on the Implicit Bootstrap (title to be determined).
+Imports:
+    Rcpp
+Suggests:
+    testthat (>= 3.0.0)
+License: GPL (>= 2)
+LinkingTo: BH (>= 1.75), Rcpp, RcppEigen (>= 0.3.3.9), RcppNumerical
+URL: https://github.com/SMAC-Group/ImpBootPaper
+BugReports: https://github.com/SMAC-Group/ImpBootPaper/issues
+RoxygenNote: 7.1.2

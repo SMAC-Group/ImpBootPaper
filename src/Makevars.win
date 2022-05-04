@@ -1,0 +1,2 @@
+## -- default C++ standards
+CXX_STD = CXX14
