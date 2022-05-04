@@ -7,6 +7,7 @@
 #' @param beta a vector of regression coefficient
 #' @param phi precision parameter
 #' @param seed integer representing the state fir random number generation
+#' @export
 rbetareg <- function(x, beta, phi, seed) {
     .Call('_ImpBootPaper_rbetareg', PACKAGE = 'ImpBootPaper', x, beta, phi, seed)
 }
@@ -19,6 +20,7 @@ rbetareg <- function(x, beta, phi, seed) {
 #' @param maxit maximum number of iteration
 #' @param eps_f tolerance
 #' @param eps_g tolerance
+#' @export
 optim_mle_betareg <- function(theta, y, x, maxit = 300L, eps_f = 1e-6, eps_g = 1e-6) {
     .Call('_ImpBootPaper_optim_mle_betareg', PACKAGE = 'ImpBootPaper', theta, y, x, maxit, eps_f, eps_g)
 }
@@ -32,6 +34,7 @@ optim_mle_betareg <- function(theta, y, x, maxit = 300L, eps_f = 1e-6, eps_g = 1
 #' @param maxit maximum number of iteration
 #' @param eps_f tolerance
 #' @param eps_g tolerance
+#' @export
 optim_swiz_betareg <- function(theta, pi, x, seed, maxit = 300L, eps_f = 1e-8, eps_g = 1e-8) {
     .Call('_ImpBootPaper_optim_swiz_betareg', PACKAGE = 'ImpBootPaper', theta, pi, x, seed, maxit, eps_f, eps_g)
 }
@@ -43,6 +46,7 @@ optim_swiz_betareg <- function(theta, pi, x, seed, maxit = 300L, eps_f = 1e-8, e
 #' @param B number of SwiZ estimates
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
+#' @export
 swiz_dist_betareg <- function(pi, x, B, seed, ncores) {
     .Call('_ImpBootPaper_swiz_dist_betareg', PACKAGE = 'ImpBootPaper', pi, x, B, seed, ncores)
 }
@@ -54,6 +58,7 @@ swiz_dist_betareg <- function(pi, x, B, seed, ncores) {
 #' @param B number of SwiZ estimates
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
+#' @export
 par_bootstrap_mle_betareg <- function(start, x, B, seed, ncores) {
     .Call('_ImpBootPaper_par_bootstrap_mle_betareg', PACKAGE = 'ImpBootPaper', start, x, B, seed, ncores)
 }
@@ -66,16 +71,10 @@ par_bootstrap_mle_betareg <- function(start, x, B, seed, ncores) {
 #' @param B number of SwiZ estimates
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
+#' @export
 par_boott_betareg <- function(theta, boot, x, B, seed, ncores) {
     .Call('_ImpBootPaper_par_boott_betareg', PACKAGE = 'ImpBootPaper', theta, boot, x, B, seed, ncores)
 }
-
-#' @title BCa acceleration parameter for Lomax distribution
-#'
-#' @param start MLE
-#' @param y observations
-#' @param which binary, 0=alpha, 1=lambda
-NULL
 
 #' @title Random generation of Lomax distribution
 #'
@@ -83,6 +82,7 @@ NULL
 #' @param b positive parameter
 #' @param q positive parameter
 #' @param seed integer representing the state fir random number generation
+#' @export
 rlomax <- function(n, b, q, seed) {
     .Call('_ImpBootPaper_rlomax', PACKAGE = 'ImpBootPaper', n, b, q, seed)
 }
@@ -94,6 +94,7 @@ rlomax <- function(n, b, q, seed) {
 #' @param maxit maximum number of iteration
 #' @param eps_f tolerance
 #' @param eps_g tolerance
+#' @export
 optim_mle_lomax <- function(start, y, maxit = 500L, eps_f = 1e-10, eps_g = 1e-10) {
     .Call('_ImpBootPaper_optim_mle_lomax', PACKAGE = 'ImpBootPaper', start, y, maxit, eps_f, eps_g)
 }
@@ -105,6 +106,7 @@ optim_mle_lomax <- function(start, y, maxit = 500L, eps_f = 1e-10, eps_g = 1e-10
 #' @param B number of SwiZ estimates
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
+#' @export
 swiz_dist_lomax <- function(pi, n, B, seed, ncores) {
     .Call('_ImpBootPaper_swiz_dist_lomax', PACKAGE = 'ImpBootPaper', pi, n, B, seed, ncores)
 }
@@ -116,6 +118,7 @@ swiz_dist_lomax <- function(pi, n, B, seed, ncores) {
 #' @param B number of SwiZ estimates
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
+#' @export
 par_bootstrap_mle_lomax <- function(start, n, B, seed, ncores) {
     .Call('_ImpBootPaper_par_bootstrap_mle_lomax', PACKAGE = 'ImpBootPaper', start, n, B, seed, ncores)
 }
@@ -129,8 +132,19 @@ par_bootstrap_mle_lomax <- function(start, n, B, seed, ncores) {
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
 #' @param robust if true uses robust estimation of covariance
+#' @export
 par_boott_lomax <- function(theta, boot, n, B, seed, ncores, robust = FALSE) {
     .Call('_ImpBootPaper_par_boott_lomax', PACKAGE = 'ImpBootPaper', theta, boot, n, B, seed, ncores, robust)
+}
+
+#' @title BCa acceleration parameter for Lomax distribution
+#'
+#' @param start MLE
+#' @param y observations
+#' @param which binary, 0=alpha, 1=lambda
+#' @export
+acceleration_lomax <- function(start, y, which) {
+    .Call('_ImpBootPaper_acceleration_lomax', PACKAGE = 'ImpBootPaper', start, y, which)
 }
 
 #' @title Random generation of t regression responses
@@ -140,7 +154,10 @@ par_boott_lomax <- function(theta, boot, n, B, seed, ncores, robust = FALSE) {
 #' @param sig2 variance parameter
 #' @param nu degrees of freedom
 #' @param seed integer representing the state fir random number generation
-NULL
+#' @export
+rstt <- function(x, beta, sig2, nu, seed) {
+    .Call('_ImpBootPaper_rstt', PACKAGE = 'ImpBootPaper', x, beta, sig2, nu, seed)
+}
 
 #' @title Maximum likelihood estimation of t regression
 #'
@@ -150,7 +167,10 @@ NULL
 #' @param maxit maximum number of iteration
 #' @param eps_f tolerance
 #' @param eps_g tolerance
-NULL
+#' @export
+optim_mle_treg <- function(start, y, x, maxit = 500L, eps_f = 1e-10, eps_g = 1e-10) {
+    .Call('_ImpBootPaper_optim_mle_treg', PACKAGE = 'ImpBootPaper', start, y, x, maxit, eps_f, eps_g)
+}
 
 #' @title SwiZ distribution for t regression
 #'
@@ -159,7 +179,10 @@ NULL
 #' @param B number of SwiZ estimates
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
-NULL
+#' @export
+swiz_dist_treg <- function(pi, x, B, seed, ncores) {
+    .Call('_ImpBootPaper_swiz_dist_treg', PACKAGE = 'ImpBootPaper', pi, x, B, seed, ncores)
+}
 
 #' @title Parametric bootstrap distribution for t regression
 #'
@@ -168,7 +191,10 @@ NULL
 #' @param B number of SwiZ estimates
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
-NULL
+#' @export
+par_bootstrap_mle_treg <- function(start, x, B, seed, ncores) {
+    .Call('_ImpBootPaper_par_bootstrap_mle_treg', PACKAGE = 'ImpBootPaper', start, x, B, seed, ncores)
+}
 
 #' @title Studentized parametric bootstrap distribution for beta regression
 #'
@@ -179,5 +205,8 @@ NULL
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
 #' @param robust if true uses robust estimation of covariance
-NULL
+#' @export
+par_boott_treg <- function(theta, boot, x, B, seed, ncores, robust = FALSE) {
+    .Call('_ImpBootPaper_par_boott_treg', PACKAGE = 'ImpBootPaper', theta, boot, x, B, seed, ncores, robust)
+}
 

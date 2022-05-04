@@ -33,5 +33,3 @@ BCa_interval_lomax <- function(boot, y, initial, alpha=c(.025, .975), which){
   alpha_cor <- pnorm(z0 + (z0 + qnorm(alpha)) / (1.0 - a * (z0 + qnorm(alpha))))
   quantile(boot[,which+1],probs=alpha_cor)
 }
-
-

@@ -180,6 +180,97 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// acceleration_lomax
+double acceleration_lomax(Eigen::VectorXd& start, Eigen::VectorXd& y, unsigned int which);
+RcppExport SEXP _ImpBootPaper_acceleration_lomax(SEXP startSEXP, SEXP ySEXP, SEXP whichSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type which(whichSEXP);
+    rcpp_result_gen = Rcpp::wrap(acceleration_lomax(start, y, which));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rstt
+Eigen::VectorXd rstt(const Eigen::MatrixXd& x, const Eigen::VectorXd& beta, double sig2, double nu, unsigned int seed);
+RcppExport SEXP _ImpBootPaper_rstt(SEXP xSEXP, SEXP betaSEXP, SEXP sig2SEXP, SEXP nuSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const Eigen::VectorXd& >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< double >::type sig2(sig2SEXP);
+    Rcpp::traits::input_parameter< double >::type nu(nuSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rstt(x, beta, sig2, nu, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// optim_mle_treg
+Rcpp::List optim_mle_treg(Eigen::VectorXd& start, Eigen::VectorXd& y, Eigen::MatrixXd& x, int maxit, double eps_f, double eps_g);
+RcppExport SEXP _ImpBootPaper_optim_mle_treg(SEXP startSEXP, SEXP ySEXP, SEXP xSEXP, SEXP maxitSEXP, SEXP eps_fSEXP, SEXP eps_gSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type eps_f(eps_fSEXP);
+    Rcpp::traits::input_parameter< double >::type eps_g(eps_gSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_mle_treg(start, y, x, maxit, eps_f, eps_g));
+    return rcpp_result_gen;
+END_RCPP
+}
+// swiz_dist_treg
+Eigen::MatrixXd swiz_dist_treg(Eigen::VectorXd& pi, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
+RcppExport SEXP _ImpBootPaper_swiz_dist_treg(SEXP piSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type pi(piSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
+    rcpp_result_gen = Rcpp::wrap(swiz_dist_treg(pi, x, B, seed, ncores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// par_bootstrap_mle_treg
+Eigen::MatrixXd par_bootstrap_mle_treg(Eigen::VectorXd& start, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
+RcppExport SEXP _ImpBootPaper_par_bootstrap_mle_treg(SEXP startSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
+    rcpp_result_gen = Rcpp::wrap(par_bootstrap_mle_treg(start, x, B, seed, ncores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// par_boott_treg
+Eigen::MatrixXd par_boott_treg(Eigen::VectorXd& theta, Eigen::MatrixXd& boot, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores, bool robust);
+RcppExport SEXP _ImpBootPaper_par_boott_treg(SEXP thetaSEXP, SEXP bootSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP, SEXP robustSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type boot(bootSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
+    Rcpp::traits::input_parameter< bool >::type robust(robustSEXP);
+    rcpp_result_gen = Rcpp::wrap(par_boott_treg(theta, boot, x, B, seed, ncores, robust));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ImpBootPaper_rbetareg", (DL_FUNC) &_ImpBootPaper_rbetareg, 4},
@@ -193,6 +284,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ImpBootPaper_swiz_dist_lomax", (DL_FUNC) &_ImpBootPaper_swiz_dist_lomax, 5},
     {"_ImpBootPaper_par_bootstrap_mle_lomax", (DL_FUNC) &_ImpBootPaper_par_bootstrap_mle_lomax, 5},
     {"_ImpBootPaper_par_boott_lomax", (DL_FUNC) &_ImpBootPaper_par_boott_lomax, 7},
+    {"_ImpBootPaper_acceleration_lomax", (DL_FUNC) &_ImpBootPaper_acceleration_lomax, 3},
+    {"_ImpBootPaper_rstt", (DL_FUNC) &_ImpBootPaper_rstt, 5},
+    {"_ImpBootPaper_optim_mle_treg", (DL_FUNC) &_ImpBootPaper_optim_mle_treg, 6},
+    {"_ImpBootPaper_swiz_dist_treg", (DL_FUNC) &_ImpBootPaper_swiz_dist_treg, 5},
+    {"_ImpBootPaper_par_bootstrap_mle_treg", (DL_FUNC) &_ImpBootPaper_par_bootstrap_mle_treg, 5},
+    {"_ImpBootPaper_par_boott_treg", (DL_FUNC) &_ImpBootPaper_par_boott_treg, 7},
     {NULL, NULL, 0}
 };
 

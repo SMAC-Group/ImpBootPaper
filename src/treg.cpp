@@ -121,7 +121,8 @@ Rcpp::List y_dy_treg(
 //' @param sig2 variance parameter
 //' @param nu degrees of freedom
 //' @param seed integer representing the state fir random number generation
-// [[Rcpp::std::export]]
+//' @export
+// [[Rcpp::export]]
 Eigen::VectorXd rstt(
     const Eigen::MatrixXd& x,
     const Eigen::VectorXd& beta,
@@ -292,7 +293,8 @@ double mle_treg::f_grad(
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
-// [[Rcpp::std::export]]
+//' @export
+// [[Rcpp::export]]
 Rcpp::List optim_mle_treg(
     Eigen::VectorXd& start,
     Eigen::VectorXd& y,
@@ -429,7 +431,8 @@ Rcpp::List of_swiz_treg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-// [[Rcpp::std::export]]
+//' @export
+// [[Rcpp::export]]
 Eigen::MatrixXd swiz_dist_treg(
     Eigen::VectorXd& pi,
     Eigen::MatrixXd& x,
@@ -471,7 +474,8 @@ Eigen::MatrixXd swiz_dist_treg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-// [[Rcpp::std::export]]
+//' @export
+// [[Rcpp::export]]
 Eigen::MatrixXd par_bootstrap_mle_treg(
     Eigen::VectorXd& start,
     Eigen::MatrixXd& x,
@@ -513,7 +517,8 @@ Eigen::MatrixXd par_bootstrap_mle_treg(
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
 //' @param robust if true uses robust estimation of covariance
-// [[Rcpp::std::export]]
+//' @export
+// [[Rcpp::export]]
 Eigen::MatrixXd par_boott_treg(
     Eigen::VectorXd& theta,
     Eigen::MatrixXd& boot,

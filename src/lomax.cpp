@@ -76,6 +76,7 @@ Eigen::MatrixXd d_y_lomax(
 //' @param b positive parameter
 //' @param q positive parameter
 //' @param seed integer representing the state fir random number generation
+//' @export
 // [[Rcpp::export]]
 Eigen::VectorXd rlomax(
     unsigned int n,
@@ -219,6 +220,7 @@ double mle_lomax::f_grad(
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
+//' @export
 // [[Rcpp::export]]
 Rcpp::List optim_mle_lomax(
     Eigen::VectorXd& start,
@@ -349,6 +351,7 @@ Rcpp::List of_swiz_lomax(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
+//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd swiz_dist_lomax(
     Eigen::VectorXd& pi,
@@ -389,6 +392,7 @@ Eigen::MatrixXd swiz_dist_lomax(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
+//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_bootstrap_mle_lomax(
     Eigen::VectorXd& start,
@@ -429,6 +433,7 @@ Eigen::MatrixXd par_bootstrap_mle_lomax(
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
 //' @param robust if true uses robust estimation of covariance
+//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_boott_lomax(
     Eigen::VectorXd& theta,
@@ -472,6 +477,8 @@ Eigen::MatrixXd par_boott_lomax(
 //' @param start MLE
 //' @param y observations
 //' @param which binary, 0=alpha, 1=lambda
+//' @export
+// [[Rcpp::export]]
 double acceleration_lomax(
     Eigen::VectorXd& start,
     Eigen::VectorXd& y,

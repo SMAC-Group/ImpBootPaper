@@ -126,6 +126,7 @@ Eigen::MatrixXd d_y_betareg(
 //' @param beta a vector of regression coefficient
 //' @param phi precision parameter
 //' @param seed integer representing the state fir random number generation
+//' @export
 // [[Rcpp::export]]
 Eigen::VectorXd rbetareg(
     const Eigen::MatrixXd& x,
@@ -380,6 +381,7 @@ double mle_betareg::f_grad(
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
+//' @export
 // [[Rcpp::export]]
 Rcpp::List optim_mle_betareg(
     Eigen::VectorXd& theta,
@@ -504,6 +506,7 @@ Eigen::VectorXd swiz_gr_betareg(
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
+//' @export
 // [[Rcpp::export]]
 Rcpp::List optim_swiz_betareg(
     Eigen::VectorXd& theta,
@@ -531,6 +534,7 @@ Rcpp::List optim_swiz_betareg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
+//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd swiz_dist_betareg(
     Eigen::VectorXd& pi,
@@ -569,6 +573,7 @@ Eigen::MatrixXd swiz_dist_betareg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
+//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_bootstrap_mle_betareg(
     Eigen::VectorXd& start,
@@ -605,6 +610,7 @@ Eigen::MatrixXd par_bootstrap_mle_betareg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
+//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_boott_betareg(
     Eigen::VectorXd& theta,
