@@ -25,9 +25,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// optim_mle
-Rcpp::List optim_mle(Eigen::VectorXd& theta, Eigen::VectorXd& y, Eigen::MatrixXd& x, int maxit, double eps_f, double eps_g);
-RcppExport SEXP _ImpBootPaper_optim_mle(SEXP thetaSEXP, SEXP ySEXP, SEXP xSEXP, SEXP maxitSEXP, SEXP eps_fSEXP, SEXP eps_gSEXP) {
+// optim_mle_betareg
+Rcpp::List optim_mle_betareg(Eigen::VectorXd& theta, Eigen::VectorXd& y, Eigen::MatrixXd& x, int maxit, double eps_f, double eps_g);
+RcppExport SEXP _ImpBootPaper_optim_mle_betareg(SEXP thetaSEXP, SEXP ySEXP, SEXP xSEXP, SEXP maxitSEXP, SEXP eps_fSEXP, SEXP eps_gSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -37,26 +37,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< double >::type eps_f(eps_fSEXP);
     Rcpp::traits::input_parameter< double >::type eps_g(eps_gSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_mle(theta, y, x, maxit, eps_f, eps_g));
+    rcpp_result_gen = Rcpp::wrap(optim_mle_betareg(theta, y, x, maxit, eps_f, eps_g));
     return rcpp_result_gen;
 END_RCPP
 }
-// of_mle
-Rcpp::List of_mle(Eigen::VectorXd& theta, Eigen::VectorXd& y, Eigen::MatrixXd& x);
-RcppExport SEXP _ImpBootPaper_of_mle(SEXP thetaSEXP, SEXP ySEXP, SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(of_mle(theta, y, x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// of_swiz
-Rcpp::List of_swiz(Eigen::VectorXd& theta, Eigen::VectorXd& pi, Eigen::MatrixXd& x, unsigned int seed);
-RcppExport SEXP _ImpBootPaper_of_swiz(SEXP thetaSEXP, SEXP piSEXP, SEXP xSEXP, SEXP seedSEXP) {
+// optim_swiz_betareg
+Rcpp::List optim_swiz_betareg(Eigen::VectorXd& theta, Eigen::VectorXd& pi, Eigen::MatrixXd& x, unsigned int seed, int maxit, double eps_f, double eps_g);
+RcppExport SEXP _ImpBootPaper_optim_swiz_betareg(SEXP thetaSEXP, SEXP piSEXP, SEXP xSEXP, SEXP seedSEXP, SEXP maxitSEXP, SEXP eps_fSEXP, SEXP eps_gSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -64,55 +51,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::VectorXd& >::type pi(piSEXP);
     Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(of_swiz(theta, pi, x, seed));
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type eps_f(eps_fSEXP);
+    Rcpp::traits::input_parameter< double >::type eps_g(eps_gSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_swiz_betareg(theta, pi, x, seed, maxit, eps_f, eps_g));
     return rcpp_result_gen;
 END_RCPP
 }
-// swiz_fn
-double swiz_fn(Eigen::VectorXd& theta, Eigen::VectorXd& pi, Eigen::MatrixXd& x, unsigned int seed);
-RcppExport SEXP _ImpBootPaper_swiz_fn(SEXP thetaSEXP, SEXP piSEXP, SEXP xSEXP, SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type pi(piSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(swiz_fn(theta, pi, x, seed));
-    return rcpp_result_gen;
-END_RCPP
-}
-// swiz_gr
-Eigen::VectorXd swiz_gr(Eigen::VectorXd& theta, Eigen::VectorXd& pi, Eigen::MatrixXd& x, unsigned int seed);
-RcppExport SEXP _ImpBootPaper_swiz_gr(SEXP thetaSEXP, SEXP piSEXP, SEXP xSEXP, SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type pi(piSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(swiz_gr(theta, pi, x, seed));
-    return rcpp_result_gen;
-END_RCPP
-}
-// optim_swiz
-Rcpp::List optim_swiz(Eigen::VectorXd& theta, Eigen::VectorXd& pi, Eigen::MatrixXd& x, unsigned int seed);
-RcppExport SEXP _ImpBootPaper_optim_swiz(SEXP thetaSEXP, SEXP piSEXP, SEXP xSEXP, SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type theta(thetaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type pi(piSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(optim_swiz(theta, pi, x, seed));
-    return rcpp_result_gen;
-END_RCPP
-}
-// swiz_dist
-Eigen::MatrixXd swiz_dist(Eigen::VectorXd& pi, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
-RcppExport SEXP _ImpBootPaper_swiz_dist(SEXP piSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
+// swiz_dist_betareg
+Eigen::MatrixXd swiz_dist_betareg(Eigen::VectorXd& pi, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
+RcppExport SEXP _ImpBootPaper_swiz_dist_betareg(SEXP piSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -121,13 +69,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(swiz_dist(pi, x, B, seed, ncores));
+    rcpp_result_gen = Rcpp::wrap(swiz_dist_betareg(pi, x, B, seed, ncores));
     return rcpp_result_gen;
 END_RCPP
 }
-// par_bootstrap_mle
-Eigen::MatrixXd par_bootstrap_mle(Eigen::VectorXd& start, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
-RcppExport SEXP _ImpBootPaper_par_bootstrap_mle(SEXP startSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
+// par_bootstrap_mle_betareg
+Eigen::MatrixXd par_bootstrap_mle_betareg(Eigen::VectorXd& start, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
+RcppExport SEXP _ImpBootPaper_par_bootstrap_mle_betareg(SEXP startSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -136,13 +84,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(par_bootstrap_mle(start, x, B, seed, ncores));
+    rcpp_result_gen = Rcpp::wrap(par_bootstrap_mle_betareg(start, x, B, seed, ncores));
     return rcpp_result_gen;
 END_RCPP
 }
-// par_boott
-Eigen::MatrixXd par_boott(Eigen::VectorXd& theta, Eigen::MatrixXd& boot, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
-RcppExport SEXP _ImpBootPaper_par_boott(SEXP thetaSEXP, SEXP bootSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
+// par_boott_betareg
+Eigen::MatrixXd par_boott_betareg(Eigen::VectorXd& theta, Eigen::MatrixXd& boot, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
+RcppExport SEXP _ImpBootPaper_par_boott_betareg(SEXP thetaSEXP, SEXP bootSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -152,22 +100,99 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(par_boott(theta, boot, x, B, seed, ncores));
+    rcpp_result_gen = Rcpp::wrap(par_boott_betareg(theta, boot, x, B, seed, ncores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rlomax
+Eigen::VectorXd rlomax(unsigned int n, double b, double q, unsigned int seed);
+RcppExport SEXP _ImpBootPaper_rlomax(SEXP nSEXP, SEXP bSEXP, SEXP qSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double >::type b(bSEXP);
+    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rlomax(n, b, q, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// optim_mle_lomax
+Rcpp::List optim_mle_lomax(Eigen::VectorXd& start, Eigen::VectorXd& y, int maxit, double eps_f, double eps_g);
+RcppExport SEXP _ImpBootPaper_optim_mle_lomax(SEXP startSEXP, SEXP ySEXP, SEXP maxitSEXP, SEXP eps_fSEXP, SEXP eps_gSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    Rcpp::traits::input_parameter< double >::type eps_f(eps_fSEXP);
+    Rcpp::traits::input_parameter< double >::type eps_g(eps_gSEXP);
+    rcpp_result_gen = Rcpp::wrap(optim_mle_lomax(start, y, maxit, eps_f, eps_g));
+    return rcpp_result_gen;
+END_RCPP
+}
+// swiz_dist_lomax
+Eigen::MatrixXd swiz_dist_lomax(Eigen::VectorXd& pi, unsigned int n, unsigned int B, unsigned int seed, unsigned int ncores);
+RcppExport SEXP _ImpBootPaper_swiz_dist_lomax(SEXP piSEXP, SEXP nSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type pi(piSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
+    rcpp_result_gen = Rcpp::wrap(swiz_dist_lomax(pi, n, B, seed, ncores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// par_bootstrap_mle_lomax
+Eigen::MatrixXd par_bootstrap_mle_lomax(Eigen::VectorXd& start, unsigned int n, unsigned int B, unsigned int seed, unsigned int ncores);
+RcppExport SEXP _ImpBootPaper_par_bootstrap_mle_lomax(SEXP startSEXP, SEXP nSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type start(startSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
+    rcpp_result_gen = Rcpp::wrap(par_bootstrap_mle_lomax(start, n, B, seed, ncores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// par_boott_lomax
+Eigen::MatrixXd par_boott_lomax(Eigen::VectorXd& theta, Eigen::MatrixXd& boot, unsigned int n, unsigned int B, unsigned int seed, unsigned int ncores, bool robust);
+RcppExport SEXP _ImpBootPaper_par_boott_lomax(SEXP thetaSEXP, SEXP bootSEXP, SEXP nSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP, SEXP robustSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::VectorXd& >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type boot(bootSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
+    Rcpp::traits::input_parameter< bool >::type robust(robustSEXP);
+    rcpp_result_gen = Rcpp::wrap(par_boott_lomax(theta, boot, n, B, seed, ncores, robust));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ImpBootPaper_rbetareg", (DL_FUNC) &_ImpBootPaper_rbetareg, 4},
-    {"_ImpBootPaper_optim_mle", (DL_FUNC) &_ImpBootPaper_optim_mle, 6},
-    {"_ImpBootPaper_of_mle", (DL_FUNC) &_ImpBootPaper_of_mle, 3},
-    {"_ImpBootPaper_of_swiz", (DL_FUNC) &_ImpBootPaper_of_swiz, 4},
-    {"_ImpBootPaper_swiz_fn", (DL_FUNC) &_ImpBootPaper_swiz_fn, 4},
-    {"_ImpBootPaper_swiz_gr", (DL_FUNC) &_ImpBootPaper_swiz_gr, 4},
-    {"_ImpBootPaper_optim_swiz", (DL_FUNC) &_ImpBootPaper_optim_swiz, 4},
-    {"_ImpBootPaper_swiz_dist", (DL_FUNC) &_ImpBootPaper_swiz_dist, 5},
-    {"_ImpBootPaper_par_bootstrap_mle", (DL_FUNC) &_ImpBootPaper_par_bootstrap_mle, 5},
-    {"_ImpBootPaper_par_boott", (DL_FUNC) &_ImpBootPaper_par_boott, 6},
+    {"_ImpBootPaper_optim_mle_betareg", (DL_FUNC) &_ImpBootPaper_optim_mle_betareg, 6},
+    {"_ImpBootPaper_optim_swiz_betareg", (DL_FUNC) &_ImpBootPaper_optim_swiz_betareg, 7},
+    {"_ImpBootPaper_swiz_dist_betareg", (DL_FUNC) &_ImpBootPaper_swiz_dist_betareg, 5},
+    {"_ImpBootPaper_par_bootstrap_mle_betareg", (DL_FUNC) &_ImpBootPaper_par_bootstrap_mle_betareg, 5},
+    {"_ImpBootPaper_par_boott_betareg", (DL_FUNC) &_ImpBootPaper_par_boott_betareg, 6},
+    {"_ImpBootPaper_rlomax", (DL_FUNC) &_ImpBootPaper_rlomax, 4},
+    {"_ImpBootPaper_optim_mle_lomax", (DL_FUNC) &_ImpBootPaper_optim_mle_lomax, 5},
+    {"_ImpBootPaper_swiz_dist_lomax", (DL_FUNC) &_ImpBootPaper_swiz_dist_lomax, 5},
+    {"_ImpBootPaper_par_bootstrap_mle_lomax", (DL_FUNC) &_ImpBootPaper_par_bootstrap_mle_lomax, 5},
+    {"_ImpBootPaper_par_boott_lomax", (DL_FUNC) &_ImpBootPaper_par_boott_lomax, 7},
     {NULL, NULL, 0}
 };
 

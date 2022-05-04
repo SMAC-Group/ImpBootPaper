@@ -1,6 +1,6 @@
 Package: ImpBootPaper
 Type: Package
-Title: Code for the paper on Implicit Bootstrap
+Title: Code for the Paper on Implicit Bootstrap
 Version: 1.0
 Date: 2022-05-04
 Authors@R: c(

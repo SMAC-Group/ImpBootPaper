@@ -1,4 +1,14 @@
 // ------------------
+// Description
+// ------------------
+// C++ implementation of the maximum likelihood estimator
+// and the Switched Z-estimator for the beta regression.
+// Beta regression is parametrized by regression coefficients
+// (linked with logit function) and a precision parameter (called phi).
+// Phi is a positive parameter. We transform phi with the log for the
+// optimisation procedure and transform back with the exponential.
+
+// ------------------
 // Header
 // ------------------
 #include "common.h"
@@ -45,7 +55,7 @@ double d_r_gamma_a(
   return (quantile(gamma_distr_u,u) - quantile(gamma_distr_l,u)) / 2.0 / eps;
 }
 
-Eigen::VectorXd y(
+Eigen::VectorXd y_betareg(
     const Eigen::MatrixXd& x,
     const Eigen::VectorXd& beta,
     double varphi,
@@ -71,7 +81,7 @@ Eigen::VectorXd y(
   return y;
 }
 
-Eigen::MatrixXd d_y(
+Eigen::MatrixXd d_y_betareg(
     const Eigen::MatrixXd& x,
     const Eigen::VectorXd& beta,
     double varphi,
@@ -110,7 +120,12 @@ Eigen::MatrixXd d_y(
   return dy;
 }
 
-
+//' Random generation of beta regression responses
+//'
+//' @param x a matrix of design (first column must be one to include an intercept)
+//' @param beta a vector of regression coefficient
+//' @param phi precision parameter
+//' @param seed integer representing the state fir random number generation
 // [[Rcpp::export]]
 Eigen::VectorXd rbetareg(
     const Eigen::MatrixXd& x,
@@ -118,13 +133,13 @@ Eigen::VectorXd rbetareg(
     double phi,
     unsigned int seed
 ){
-  return y(x,beta,log(phi),seed);
+  return y_betareg(x,beta,log(phi),seed);
 }
 
 // ------------------
 // Log-likelihood
 // ------------------
-double ll(
+double ll_betareg(
     const Eigen::VectorXd& theta,
     const Eigen::VectorXd& y,
     const Eigen::MatrixXd& x
@@ -147,7 +162,7 @@ double ll(
   return of / n;
 }
 
-Eigen::VectorXd d_ll(
+Eigen::VectorXd d_ll_betareg(
     const Eigen::VectorXd& theta,
     const Eigen::VectorXd& y,
     const Eigen::MatrixXd& x
@@ -179,7 +194,7 @@ Eigen::VectorXd d_ll(
   return grad / n;
 }
 
-Eigen::VectorXd psi(
+Eigen::VectorXd psi_betareg(
     const Eigen::VectorXd& theta,
     const Eigen::VectorXd& pi,
     const Eigen::MatrixXd& x,
@@ -243,7 +258,7 @@ Eigen::VectorXd psi(
     return grad;
   }
 
-  Eigen::VectorXd yt = y(x,theta.head(p-1),theta(p-1),seed);
+  Eigen::VectorXd y = y_betareg(x,theta.head(p-1),theta(p-1),seed);
 
   t4 = boost::math::digamma(phi, my_policy());
 
@@ -253,10 +268,10 @@ Eigen::VectorXd psi(
     t2 = phi - t1;
     t3 = mu - mu * mu;
     t5 = boost::math::digamma(t2, my_policy());
-    delta = boost::math::digamma(t1, my_policy()) - t5 - logit(yt(i));
+    delta = boost::math::digamma(t1, my_policy()) - t5 - logit(y(i));
     d_mu = t3 * x.row(i);
     grad.head(p-1) += phi * delta * d_mu;
-    grad(p-1) += mu * delta + t5 - std::log(0.1e1 - yt(i)) - t4; // check the log computation
+    grad(p-1) += mu * delta + t5 - std::log(0.1e1 - y(i)) - t4; // check the log computation
   }
 
   grad(p-1) *= phi;
@@ -264,7 +279,7 @@ Eigen::VectorXd psi(
   return grad / n;
 }
 
-Eigen::MatrixXd d_psi(
+Eigen::MatrixXd d_psi_betareg(
     const Eigen::VectorXd& theta,
     const Eigen::VectorXd& pi,
     const Eigen::MatrixXd& x,
@@ -315,18 +330,18 @@ Eigen::MatrixXd d_psi(
   }
 
   Eigen::VectorXd d_mu(p-1);
-  Eigen::VectorXd yt = y(x,theta.head(p-1),theta(p-1),seed);
-  Eigen::MatrixXd dyt = d_y(x,theta.head(p-1),theta(p-1),seed);
+  Eigen::VectorXd y = y_betareg(x,theta.head(p-1),theta(p-1),seed);
+  Eigen::MatrixXd dy = d_y_betareg(x,theta.head(p-1),theta(p-1),seed);
   Eigen::RowVectorXd lambda(p);
 
   for(unsigned int i(0);i<n;++i){
-    t4 = yt(i) - yt(i) * yt(i);
-    lambda = dyt.row(i) / t4;
+    t4 = y(i) - y(i) * y(i);
+    lambda = dy.row(i) / t4;
     mu = logistic(eta(i));
     t3 = mu - mu * mu;
     d_mu = t3 * x.row(i);
     jac.topRows(p-1) -= phi * d_mu * lambda;
-    jac.row(p-1) += yt(i) * lambda - mu * lambda;
+    jac.row(p-1) += y(i) * lambda - mu * lambda;
   }
   jac.row(p-1) *= phi;
 
@@ -337,28 +352,36 @@ Eigen::MatrixXd d_psi(
 // Maximum likelihood
 // ------------------
 
-class mle: public Numer::MFuncGrad
+class mle_betareg: public Numer::MFuncGrad
 {
 private:
   const Eigen::VectorXd y;
   const Eigen::MatrixXd x;
 
 public:
-  mle(const Eigen::VectorXd y_, const Eigen::MatrixXd x_) : y(y_), x(x_) {}
+  mle_betareg(const Eigen::VectorXd y_, const Eigen::MatrixXd x_) : y(y_), x(x_) {}
   double f_grad(Numer::Constvec& theta, Numer::Refvec gr);
 };
 
-double mle::f_grad(
+double mle_betareg::f_grad(
     Numer::Constvec& theta,
     Numer::Refvec gr
 ){
-  const double of = ll(theta,y,x);
-  gr = d_ll(theta,y,x);
+  const double of = ll_betareg(theta,y,x);
+  gr = d_ll_betareg(theta,y,x);
   return of;
 }
 
+//' Maximum likelihood estimation of beta regression
+//'
+//' @param theta initial values (coef + log-precision)
+//' @param y responses
+//' @param x matrix of design
+//' @param maxit maximum number of iteration
+//' @param eps_f tolerance
+//' @param eps_g tolerance
 // [[Rcpp::export]]
-Rcpp::List optim_mle(
+Rcpp::List optim_mle_betareg(
     Eigen::VectorXd& theta,
     Eigen::VectorXd& y,
     Eigen::MatrixXd& x,
@@ -367,7 +390,7 @@ Rcpp::List optim_mle(
     double eps_g = 1e-6
 ){
   double fopt;
-  mle f(y,x);
+  mle_betareg f(y,x);
   int status = Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
   return Rcpp::List::create(
     Rcpp::Named("par") = theta,
@@ -376,8 +399,7 @@ Rcpp::List optim_mle(
   );
 }
 
-// [[Rcpp::export]]
-Rcpp::List of_mle(
+Rcpp::List of_mle_betareg(
     Eigen::VectorXd& theta,
     Eigen::VectorXd& y,
     Eigen::MatrixXd& x
@@ -385,7 +407,7 @@ Rcpp::List of_mle(
   double fopt;
   unsigned int p = theta.size();
   Eigen::VectorXd gr(p);
-  mle f(y,x);
+  mle_betareg f(y,x);
   fopt = f.f_grad(theta,gr);
   return Rcpp::List::create(
     Rcpp::Named("f") = fopt,
@@ -397,7 +419,7 @@ Rcpp::List of_mle(
 // Switched Z-estimator
 // ------------------
 
-class swiz: public Numer::MFuncGrad
+class swiz_betareg: public Numer::MFuncGrad
 {
 private:
   const Eigen::VectorXd pi;
@@ -405,38 +427,37 @@ private:
   const unsigned int seed;
 
 public:
-  swiz(const Eigen::VectorXd pi_, const Eigen::MatrixXd x_, const unsigned int seed_) :
+  swiz_betareg(const Eigen::VectorXd pi_, const Eigen::MatrixXd x_, const unsigned int seed_) :
   pi(pi_), x(x_), seed(seed_) {}
   double f_grad(Numer::Constvec& theta, Numer::Refvec gr);
 };
 
-double swiz::f_grad(
+double swiz_betareg::f_grad(
     Numer::Constvec& theta,
     Numer::Refvec gr
 ){
-  Eigen::VectorXd p = psi(theta,pi,x,seed);
-  Eigen::MatrixXd dp = d_psi(theta,pi,x,seed);
+  Eigen::VectorXd p = psi_betareg(theta,pi,x,seed);
+  Eigen::MatrixXd dp = d_psi_betareg(theta,pi,x,seed);
   const double of = p.squaredNorm() / 0.2e1;
   gr = dp.transpose() * p;
   return of;
 }
 
-Rcpp::List psi_dpsi(
+Rcpp::List psi_dpsi_betareg(
     Eigen::VectorXd& theta,
     Eigen::VectorXd& pi,
     Eigen::MatrixXd& x,
     unsigned int seed
 ){
-  Eigen::VectorXd p = psi(theta,pi,x,seed);
-  Eigen::MatrixXd dp = d_psi(theta,pi,x,seed);
+  Eigen::VectorXd p = psi_betareg(theta,pi,x,seed);
+  Eigen::MatrixXd dp = d_psi_betareg(theta,pi,x,seed);
   return Rcpp::List::create(
     Rcpp::Named("psi") = p,
     Rcpp::Named("d_psi") = dp
   );
 }
 
-// [[Rcpp::export]]
-Rcpp::List of_swiz(
+Rcpp::List of_swiz_betareg(
     Eigen::VectorXd& theta,
     Eigen::VectorXd& pi,
     Eigen::MatrixXd& x,
@@ -445,7 +466,7 @@ Rcpp::List of_swiz(
   double fopt;
   unsigned int p = theta.size();
   Eigen::VectorXd gr(p);
-  swiz f(pi,x,seed);
+  swiz_betareg f(pi,x,seed);
   fopt = f.f_grad(theta,gr);
   return Rcpp::List::create(
     Rcpp::Named("f") = fopt,
@@ -453,41 +474,48 @@ Rcpp::List of_swiz(
   );
 }
 
-// [[Rcpp::export]]
-double swiz_fn(
+double swiz_fn_betareg(
     Eigen::VectorXd& theta,
     Eigen::VectorXd& pi,
     Eigen::MatrixXd& x,
     unsigned int seed
 ){
-  Eigen::VectorXd p = psi(theta,pi,x,seed);
+  Eigen::VectorXd p = psi_betareg(theta,pi,x,seed);
   return p.squaredNorm() / 0.2e1;
 }
 
-// [[Rcpp::export]]
-Eigen::VectorXd swiz_gr(
+Eigen::VectorXd swiz_gr_betareg(
     Eigen::VectorXd& theta,
     Eigen::VectorXd& pi,
     Eigen::MatrixXd& x,
     unsigned int seed
 ){
-  Eigen::VectorXd p = psi(theta,pi,x,seed);
-  Eigen::MatrixXd dp = d_psi(theta,pi,x,seed);
+  Eigen::VectorXd p = psi_betareg(theta,pi,x,seed);
+  Eigen::MatrixXd dp = d_psi_betareg(theta,pi,x,seed);
   return dp.transpose() * p;
 }
 
+//' A single SwiZ estimation for beta regression
+//'
+//' @param theta initial values (coef + log-precision)
+//' @param pi initial estimator
+//' @param x matrix of design
+//' @param seed integer representing the state fir random number generation
+//' @param maxit maximum number of iteration
+//' @param eps_f tolerance
+//' @param eps_g tolerance
 // [[Rcpp::export]]
-Rcpp::List optim_swiz(
+Rcpp::List optim_swiz_betareg(
     Eigen::VectorXd& theta,
     Eigen::VectorXd& pi,
     Eigen::MatrixXd& x,
-    unsigned int seed
+    unsigned int seed,
+    int maxit = 300,
+    double eps_f = 1e-8,
+    double eps_g = 1e-8
 ){
   double fopt;
-  swiz f(pi,x,seed);
-  int maxit = 300;
-  double eps_f = 1e-8;
-  double eps_g = 1e-8;
+  swiz_betareg f(pi,x,seed);
   int status = Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
   return Rcpp::List::create(
     Rcpp::Named("par") = theta,
@@ -496,8 +524,15 @@ Rcpp::List optim_swiz(
   );
 }
 
+//' SwiZ distribution for beta regression
+//'
+//' @param pi initial estimator
+//' @param x matrix of design
+//' @param B number of SwiZ estimates
+//' @param seed integer representing the state fir random number generation
+//' @param ncores number of cores (OpenMP parallelisation)
 // [[Rcpp::export]]
-Eigen::MatrixXd swiz_dist(
+Eigen::MatrixXd swiz_dist_betareg(
     Eigen::VectorXd& pi,
     Eigen::MatrixXd& x,
     unsigned int B,
@@ -512,7 +547,7 @@ Eigen::MatrixXd swiz_dist(
     Eigen::VectorXd theta = pi;
     unsigned int se = seed + i;
     double fopt;
-    swiz f(pi,x,se);
+    swiz_betareg f(pi,x,se);
     int maxit = 300;
     double eps_f = 1e-8;
     double eps_g = 1e-8;
@@ -527,8 +562,15 @@ Eigen::MatrixXd swiz_dist(
 // Parametric Bootstrap
 // ------------------
 
+//' Parametric bootstrap distribution for beta regression
+//'
+//' @param start initial estimator
+//' @param x matrix of design
+//' @param B number of SwiZ estimates
+//' @param seed integer representing the state fir random number generation
+//' @param ncores number of cores (OpenMP parallelisation)
 // [[Rcpp::export]]
-Eigen::MatrixXd par_bootstrap_mle(
+Eigen::MatrixXd par_bootstrap_mle_betareg(
     Eigen::VectorXd& start,
     Eigen::MatrixXd& x,
     unsigned int B,
@@ -538,13 +580,13 @@ Eigen::MatrixXd par_bootstrap_mle(
   unsigned int p = start.size();
   Eigen::MatrixXd boot(B,p);
 
-#pragma omp parallel for num_threads(ncores)
+  #pragma omp parallel for num_threads(ncores)
   for(unsigned int i=0; i<B; ++i){
     Eigen::VectorXd theta = start;
     unsigned int se = seed + i;
-    Eigen::VectorXd yt = y(x,start.head(p-1),start(p-1),se);
+    Eigen::VectorXd y = y_betareg(x,start.head(p-1),start(p-1),se);
     double fopt;
-    mle f(yt,x);
+    mle_betareg f(y,x);
     int maxit = 300;
     double eps_f = 1e-8;
     double eps_g = 1e-8;
@@ -555,8 +597,16 @@ Eigen::MatrixXd par_bootstrap_mle(
   return boot;
 }
 
+//' Studentized parametric bootstrap distribution for beta regression
+//'
+//' @param theta initial estimator
+//' @param boot matrix, parametric bootstrap
+//' @param x matrix of design
+//' @param B number of SwiZ estimates
+//' @param seed integer representing the state fir random number generation
+//' @param ncores number of cores (OpenMP parallelisation)
 // [[Rcpp::export]]
-Eigen::MatrixXd par_boott(
+Eigen::MatrixXd par_boott_betareg(
     Eigen::VectorXd& theta,
     Eigen::MatrixXd& boot,
     Eigen::MatrixXd& x,
@@ -574,7 +624,7 @@ Eigen::MatrixXd par_boott(
   for(unsigned int i=0; i<S; ++i){
     Eigen::MatrixXd new_boot(B,p);
     Eigen::VectorXd start = boot.row(i);
-    new_boot = par_bootstrap_mle(start,x,B,se(i),1);
+    new_boot = par_bootstrap_mle_betareg(start,x,B,se(i),1);
     Eigen::MatrixXd cov = covariance(new_boot);
     Eigen::ArrayXd sd = cov.diagonal().array().sqrt();
     boott.row(i) = (start - theta).array() / sd;
