@@ -7,6 +7,8 @@
 optim_mle_treg(start, y, x, maxit = 500L, eps_f = 1e-10, eps_g = 1e-10)
 }
 \arguments{
+\item{start}{initial values (coef + log-variance + log-dof)}
+
 \item{y}{responses}
 
 \item{x}{matrix of design}
@@ -16,8 +18,6 @@ optim_mle_treg(start, y, x, maxit = 500L, eps_f = 1e-10, eps_g = 1e-10)
 \item{eps_f}{tolerance}
 
 \item{eps_g}{tolerance}
-
-\item{theta}{initial values (coef + log-variance + log-dof)}
 }
 \description{
 Maximum likelihood estimation of t regression

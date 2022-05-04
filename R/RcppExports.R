@@ -161,7 +161,7 @@ rstt <- function(x, beta, sig2, nu, seed) {
 
 #' @title Maximum likelihood estimation of t regression
 #'
-#' @param theta initial values (coef + log-variance + log-dof)
+#' @param start initial values (coef + log-variance + log-dof)
 #' @param y responses
 #' @param x matrix of design
 #' @param maxit maximum number of iteration
