@@ -7,6 +7,7 @@
 #' @param theta a vector of parameters
 #' @export
 check_ci <- function(ci,theta){
+    if(any(is.na(ci))) return(NA_character_)
     if(!is.matrix(ci)) ci <- as.matrix(ci)
     if(ncol(ci)!=2) ci <- t(ci)
     if(nrow(ci)!=length(theta)) stop("verify 'ci' and 'theta' dimensions match")

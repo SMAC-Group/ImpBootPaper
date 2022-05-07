@@ -2,6 +2,7 @@
 # Estimation of Lomax distribution
 #---------------------------------
 library(ImpBootPaper)
+library(VGAM)
 
 #------------------------
 # Simulation setting
@@ -31,8 +32,8 @@ res <- list(
   boottrob = matrix(nrow = MC, ncol = 2 * p),
   bca = matrix(nrow = MC, ncol = 2 * p),
   classic = matrix(nrow = MC, ncol = 2 * p),
-  classicrob = matrix(nrow = MC, ncol = 2 * p),
-  time = matrix(nrow = MC, ncol = 5),
+  time = matrix(nrow = MC, ncol = 6),
+  mle = matrix(nrow = MC, ncol = p),
   initial = matrix(nrow = MC, ncol = p),
   implicit_exact = matrix(nrow = MC, ncol = p),
   percentile_exact = matrix(nrow = MC, ncol = p)
@@ -50,16 +51,26 @@ id_slurm <- as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID"))
 #------------------------
 for(m in na.omit(ind[id_slurm,])){
   # Sample computation
-  y <- rlomax(n, theta[1], theta[2], se1[m])
+  y <- ImpBootPaper::rlomax(n, theta[1], theta[2], se1[m])
 
   # initial estimator
-  start <- theta
   fit_sample <- NULL
-  try(fit_sample <- optim_mle_lomax(start, y), silent=TRUE)
-  if(is.null(fit_sample)) next
-  if(any(is.na(fit_sample$par))) next
-  theta_hat <- fit_sample$par
+  start <- log(theta)
+  try(fit_sample <- vglm(y ~ 1, family = lomax, coefstart = start), silent=TRUE)
+  if(!is.null(fit_sample)) res$mle[m,] <- coef(fit_sample)
+
+  if(is.null(fit_sample)){start <- theta}else{start <- coef(fit_sample)}
+  fit_sample2 <- NULL
+  try(fit_sample2 <- optim_mle_lomax(start, y), silent=TRUE)
+  if(is.null(fit_sample2)) next
+  if(any(is.na(fit_sample2$par))) next
+  theta_hat <- fit_sample2$par
   res$initial[m,] <- theta_hat
+
+  if(is.null(fit_sample)){
+    try(fit_sample <- vglm(y ~ 1, family = lomax, coefstart = log(theta_hat)), silent=TRUE)
+    if(!is.null(fit_sample)) res$mle[m,] <- coef(fit_sample)
+  }
 
   # JIME
   t1 <- Sys.time()
@@ -82,14 +93,14 @@ for(m in na.omit(ind[id_slurm,])){
   pivot_distr <- par_boott_lomax(theta_hat,boot_distr,n,S2,se2[m],ncores,robust=FALSE)
   t2 <- Sys.time()
   res$time[m,3] <- difftime(t2, t1, units = "secs")
-  res$boott[m,] <- c(t(theta_hat - apply(boot_distr,2,sd,na.rm=T) * t(apply(pivot_distr,2,function(x)quantile(x,probs=alpha[2:1],na.rm=T)))))
+  res$boott[m,] <- c(theta_hat - apply(boot_distr,2,sd,na.rm=T) * t(apply(pivot_distr,2,function(x)quantile(x,probs=alpha[2:1],na.rm=T))))
 
   # studentized bootstrap (with robust variance)
   t1 <- Sys.time()
   pivot_distr_rob <- par_boott_lomax(theta_hat,boot_distr,n,S2,se2[m],ncores,robust=TRUE)
   t2 <- Sys.time()
   res$time[m,4] <- difftime(t2, t1, units = "secs")
-  res$boottrob[m,] <- c(t(theta_hat - apply(boot_distr,2,mad,na.rm=T) * t(apply(pivot_distr_rob,2,function(x)quantile(x,probs=alpha[2:1],na.rm=T)))))
+  res$boottrob[m,] <- c(theta_hat - apply(boot_distr,2,mad,na.rm=T) * t(apply(pivot_distr_rob,2,function(x)quantile(x,probs=alpha[2:1],na.rm=T))))
 
   # BCa bootstrap
   t1 <- Sys.time()
@@ -98,9 +109,15 @@ for(m in na.omit(ind[id_slurm,])){
   t2 <- Sys.time()
   res$time[m,5] <- difftime(t2, t1, units = "secs")
 
-  # classic
-  res$classic[m,] <- c(t(theta_hat + apply(boot_distr,2,sd,na.rm=T) * matrix(qnorm(p = alpha),nrow=2,ncol=length(theta_hat),byrow=T)))
-  res$classicrob[m,] <- c(t(theta_hat + apply(boot_distr,2,mad,na.rm=T) * matrix(qnorm(p = alpha),nrow=2,ncol=length(theta_hat),byrow=T)))
+  # classical (package)
+  if(!is.null(fit_sample)){
+    t1 <- Sys.time()
+    ci_class <- NULL
+    try(ci_class <- confint(fit_sample), silent=T)
+    if(!is.null(ci_class)) res$classic[m,] <- c(ci_class)
+    t2 <- Sys.time()
+    res$time[m,6] <- difftime(t2, t1, units = "secs")
+  }
 
   # save results
   save(res, file=paste0("tmp/",assumed_model,"_id_",id_slurm,".rds"))
