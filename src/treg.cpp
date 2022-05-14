@@ -123,7 +123,7 @@ Rcpp::List y_dy_treg(
 //' @param seed integer representing the state fir random number generation
 //' @export
 // [[Rcpp::export]]
-Eigen::VectorXd rstt(
+Eigen::VectorXd rtreg(
     const Eigen::MatrixXd& x,
     const Eigen::VectorXd& beta,
     double sig2,
@@ -293,7 +293,6 @@ double mle_treg::f_grad(
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
-//' @export
 // [[Rcpp::export]]
 Rcpp::List optim_mle_treg(
     Eigen::VectorXd& start,
@@ -431,7 +430,6 @@ Rcpp::List of_swiz_treg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd swiz_dist_treg(
     Eigen::VectorXd& pi,
@@ -474,7 +472,6 @@ Eigen::MatrixXd swiz_dist_treg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_bootstrap_mle_treg(
     Eigen::VectorXd& start,
@@ -493,7 +490,7 @@ Eigen::MatrixXd par_bootstrap_mle_treg(
     theta(p-2) = std::log(start(p-2));
     unsigned int se = seed + i;
     // Eigen::VectorXd yt = y(x,start.head(p-2),start(p-2),start(p-1),se);
-    Eigen::VectorXd y = rstt(x,start.head(p-2),start(p-2),start(p-1),se);
+    Eigen::VectorXd y = rtreg(x,start.head(p-2),start(p-2),start(p-1),se);
     double fopt;
     mle_treg f(y,x);
     int maxit = 300;
@@ -508,7 +505,7 @@ Eigen::MatrixXd par_bootstrap_mle_treg(
   return boot;
 }
 
-//' @title Studentized parametric bootstrap distribution for beta regression
+//' @title Studentized parametric bootstrap distribution for t regression
 //'
 //' @param theta initial estimator
 //' @param boot matrix, parametric bootstrap
@@ -517,7 +514,6 @@ Eigen::MatrixXd par_bootstrap_mle_treg(
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
 //' @param robust if true uses robust estimation of covariance
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_boott_treg(
     Eigen::VectorXd& theta,
@@ -534,7 +530,7 @@ Eigen::MatrixXd par_boott_treg(
   Eigen::VectorXi se(S);
   se = sample_int(S,seed);
 
-#pragma omp parallel for num_threads(ncores)
+  #pragma omp parallel for num_threads(ncores)
   for(unsigned int i=0; i<S; ++i){
     Eigen::MatrixXd new_boot(B,p);
     Eigen::VectorXd start = boot.row(i);
@@ -552,4 +548,59 @@ Eigen::MatrixXd par_boott_treg(
   }
 
   return boott;
+}
+
+// ------------------
+// For BCa
+// ------------------
+// inspired from R bootstrap::bcanon
+//' @title BCa acceleration parameter for t regression
+//'
+//' @param start MLE
+//' @param y observations
+//' @param x matrix of design
+// [[Rcpp::export]]
+Eigen::VectorXd acceleration_treg(
+    Eigen::VectorXd& start,
+    Eigen::VectorXd& y,
+    Eigen::MatrixXd& x
+){
+  unsigned int n = y.size();
+  unsigned int p = x.cols();
+  int maxit = 300;
+  double eps_f = 1e-8;
+  double eps_g = 1e-7;
+  Eigen::ArrayXXd u(n,p);
+  Eigen::ArrayXXd uu(n,p);
+  Eigen::ArrayXd t2(p), t3(p);
+  Eigen::VectorXd yy(n-1);
+  Eigen::MatrixXd xx(n-1,p);
+
+  for(unsigned int i(0);i<n;++i){
+    // I exploit the fact data has no order (iid)
+    yy = y.tail(n-1);
+    xx = x.bottomRows(n-1);
+    if(i != 0){
+      yy(i-1) = y(0);
+      xx.row(i-1) = xx.row(0);
+    }
+
+    Eigen::VectorXd theta = start;
+    theta(p-1) = std::log(start(p-1));
+    theta(p-2) = std::log(start(p-2));
+    double fopt;
+    mle_treg f(yy,xx);
+    Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
+    u.row(i) = theta;
+    u(i,p-1) = std::exp(theta(p-1));
+    u(i,p-2) = std::exp(theta(p-2));
+  }
+  for(unsigned int i(0);i<p;++i){
+    uu.col(i) = u.col(i).sum() / n - u.col(i);
+  }
+  uu *= uu;
+  t2 = uu.colwise().sum();
+  uu *= uu;
+  t3 = uu.colwise().sum();
+  return t3 / 6.0 / t2.pow(3.0 / 2.0);
 }

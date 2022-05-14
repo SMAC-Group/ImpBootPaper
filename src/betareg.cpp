@@ -215,7 +215,8 @@ Eigen::VectorXd psi_betareg(
     return grad;
   }
 
-  phi = std::exp(pi(p-1));
+  // phi = std::exp(pi(p-1));
+  phi = pi(p-1);
   eta = x * pi.head(p-1);
 
   // Rcpp::Rcout << "Parameters: " << theta.transpose() << "\n";
@@ -299,7 +300,8 @@ Eigen::MatrixXd d_psi_betareg(
     return jac;
   }
 
-  phi = std::exp(pi(p-1));
+  // phi = std::exp(pi(p-1));
+  phi = pi(p-1);
   eta = x * pi.head(p-1);
 
   double _tmp_log_min = logistic((x * theta.head(p-1)).minCoeff());
@@ -375,25 +377,28 @@ double mle_betareg::f_grad(
 
 //' @title Maximum likelihood estimation of beta regression
 //'
-//' @param theta initial values (coef + log-precision)
+//' @param start initial values (coef + log-precision)
 //' @param y responses
 //' @param x matrix of design
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
-//' @export
 // [[Rcpp::export]]
 Rcpp::List optim_mle_betareg(
-    Eigen::VectorXd& theta,
+    Eigen::VectorXd& start,
     Eigen::VectorXd& y,
     Eigen::MatrixXd& x,
     int maxit = 300,
     double eps_f = 1e-6,
     double eps_g = 1e-6
 ){
+  unsigned int p = start.size();
   double fopt;
+  Eigen::VectorXd theta = start;
+  theta(p-1) = std::log(start(p-1));
   mle_betareg f(y,x);
   int status = Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
+  theta(p-1) = std::exp(theta(p-1));
   return Rcpp::List::create(
     Rcpp::Named("par") = theta,
     Rcpp::Named("value") = fopt,
@@ -506,8 +511,6 @@ Eigen::VectorXd swiz_gr_betareg(
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
-//' @export
-// [[Rcpp::export]]
 Rcpp::List optim_swiz_betareg(
     Eigen::VectorXd& theta,
     Eigen::VectorXd& pi,
@@ -534,7 +537,6 @@ Rcpp::List optim_swiz_betareg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd swiz_dist_betareg(
     Eigen::VectorXd& pi,
@@ -549,6 +551,7 @@ Eigen::MatrixXd swiz_dist_betareg(
   #pragma omp parallel for num_threads(ncores)
   for(unsigned int i=0; i<B; ++i){
     Eigen::VectorXd theta = pi;
+    theta(p-1) = std::log(pi(p-1));
     unsigned int se = seed + i;
     double fopt;
     swiz_betareg f(pi,x,se);
@@ -557,6 +560,7 @@ Eigen::MatrixXd swiz_dist_betareg(
     double eps_g = 1e-8;
     Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
     boot.row(i) = theta;
+    boot(i,p-1) = std::exp(theta(p-1));
   }
 
   return boot;
@@ -573,7 +577,6 @@ Eigen::MatrixXd swiz_dist_betareg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_bootstrap_mle_betareg(
     Eigen::VectorXd& start,
@@ -588,6 +591,7 @@ Eigen::MatrixXd par_bootstrap_mle_betareg(
   #pragma omp parallel for num_threads(ncores)
   for(unsigned int i=0; i<B; ++i){
     Eigen::VectorXd theta = start;
+    theta(p-1) = std::log(start(p-1));
     unsigned int se = seed + i;
     Eigen::VectorXd y = y_betareg(x,start.head(p-1),start(p-1),se);
     double fopt;
@@ -597,6 +601,7 @@ Eigen::MatrixXd par_bootstrap_mle_betareg(
     double eps_g = 1e-8;
     Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
     boot.row(i) = theta;
+    boot(i,p-1) = std::exp(theta(p-1));
   }
 
   return boot;
@@ -610,7 +615,6 @@ Eigen::MatrixXd par_bootstrap_mle_betareg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_boott_betareg(
     Eigen::VectorXd& theta,
@@ -637,4 +641,57 @@ Eigen::MatrixXd par_boott_betareg(
   }
 
   return boott;
+}
+
+// ------------------
+// For BCa
+// ------------------
+// inspired from R bootstrap::bcanon
+//' @title BCa acceleration parameter for beta regression
+//'
+//' @param start MLE
+//' @param y observations
+//' @param x matrix of design
+// [[Rcpp::export]]
+Eigen::VectorXd acceleration_betareg(
+    Eigen::VectorXd& start,
+    Eigen::VectorXd& y,
+    Eigen::MatrixXd& x
+){
+  unsigned int n = y.size();
+  unsigned int p = x.cols();
+  int maxit = 300;
+  double eps_f = 1e-8;
+  double eps_g = 1e-7;
+  Eigen::ArrayXXd u(n,p);
+  Eigen::ArrayXXd uu(n,p);
+  Eigen::ArrayXd t2(p), t3(p);
+  Eigen::VectorXd yy(n-1);
+  Eigen::MatrixXd xx(n-1,p);
+
+  for(unsigned int i(0);i<n;++i){
+    // I exploit the fact data has no order (iid)
+    yy = y.tail(n-1);
+    xx = x.bottomRows(n-1);
+    if(i != 0){
+      yy(i-1) = y(0);
+      xx.row(i-1) = xx.row(0);
+    }
+
+    Eigen::VectorXd theta = start;
+    theta(p-1) = std::log(start(p-1));
+    double fopt;
+    mle_betareg f(yy,xx);
+    Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
+    u.row(i) = theta;
+    u(i,p-1) = std::exp(theta(p-1));
+  }
+  for(unsigned int i(0);i<p;++i){
+    uu.col(i) = u.col(i).sum() / n - u.col(i);
+  }
+  uu *= uu;
+  t2 = uu.colwise().sum();
+  uu *= uu;
+  t3 = uu.colwise().sum();
+  return t3 / 6.0 / t2.pow(3.0 / 2.0);
 }

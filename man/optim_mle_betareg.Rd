@@ -4,10 +4,10 @@
 \alias{optim_mle_betareg}
 \title{Maximum likelihood estimation of beta regression}
 \usage{
-optim_mle_betareg(theta, y, x, maxit = 300L, eps_f = 1e-06, eps_g = 1e-06)
+optim_mle_betareg(start, y, x, maxit = 300L, eps_f = 1e-06, eps_g = 1e-06)
 }
 \arguments{
-\item{theta}{initial values (coef + log-precision)}
+\item{start}{initial values (coef + log-precision)}
 
 \item{y}{responses}
 

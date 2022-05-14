@@ -1,0 +1,109 @@
+#---------------------------------
+# Estimation of t regression
+#---------------------------------
+library(ImpBootPaper)
+
+#------------------------
+# Simulation setting
+#------------------------
+assumed_model <- as.character(Sys.getenv("MODEL"))
+n <- as.integer(Sys.getenv("N")) # sample size
+param <- as.double(Sys.getenv("PARAM"))
+MC <- 1e4 # Monte Carlo simulations
+ncores <- 1L
+theta <- c(param, 1.0) # true parameter
+p <- 2
+alpha <- c(.025, .975)
+S <- 1e4 # number of values for approximating the distribution
+S2 <- 1e2 # number of second layer of bootstrap for studentized bootstrap
+# seeds for random generator
+set.seed(round(1e3 * param))
+random_number1 <- sample.int(1e6,1)
+set.seed(7483 * n)
+random_number2 <- sample.int(1e6,1)
+set.seed(98323 + random_number1 + random_number2) # random hand typing algorithm
+se1 <- sample.int(1e7, MC)
+se2 <- sample.int(1e7, MC)
+res <- list(
+  implicit = matrix(nrow = MC, ncol = 2 * p),
+  percentile = matrix(nrow = MC, ncol = 2 * p),
+  boott = matrix(nrow = MC, ncol = 2 * p),
+  boottrob = matrix(nrow = MC, ncol = 2 * p),
+  bca = matrix(nrow = MC, ncol = 2 * p),
+  classic = matrix(nrow = MC, ncol = 2 * p),
+  classicrob = matrix(nrow = MC, ncol = 2 * p),
+  time = matrix(nrow = MC, ncol = 5),
+  initial = matrix(nrow = MC, ncol = p),
+  implicit_exact = matrix(nrow = MC, ncol = p),
+  percentile_exact = matrix(nrow = MC, ncol = p)
+)
+
+#------------------------
+# slurm specs
+#------------------------
+n_array <- 1000
+ind <- matrix(seq_len(MC), nr=n_array, byr=TRUE)
+id_slurm <- as.integer(Sys.getenv("SLURM_ARRAY_TASK_ID"))
+
+#------------------------
+# Simulation
+#------------------------
+for(m in na.omit(ind[id_slurm,])){
+  # Sample computation
+  y <- rlomax(n, theta[1], theta[2], se1[m])
+
+  # initial estimator
+  start <- theta
+  fit_sample <- NULL
+  try(fit_sample <- optim_mle_lomax(start, y), silent=TRUE)
+  if(is.null(fit_sample)) next
+  if(any(is.na(fit_sample$par))) next
+  theta_hat <- fit_sample$par
+  res$initial[m,] <- theta_hat
+
+  # JIME
+  t1 <- Sys.time()
+  emp_distr <- swiz_dist_lomax(theta_hat, n, S, se2[m], ncores)
+  t2 <- Sys.time()
+  res$time[m,1] <- difftime(t2, t1, units = "secs")
+  res$implicit_exact[m,] <- rowMeans(t(emp_distr) < theta, na.rm = TRUE)
+  res$implicit[m,] <- c(apply(emp_distr,2,function(x)quantile(x,probs=alpha,na.rm=T)))
+
+  # percentile bootstrap
+  t1 <- Sys.time()
+  boot_distr <- par_bootstrap_mle_lomax(theta_hat,n,S,se2[m],ncores)
+  t2 <- Sys.time()
+  res$time[m,2] <- difftime(t2, t1, units = "secs")
+  res$percentile_exact[m,] <- rowMeans(t(boot_distr) < theta, na.rm = TRUE)
+  res$percentile[m,] <- c(apply(boot_distr,2,function(x)quantile(x,probs=alpha,na.rm=T)))
+
+  # studentized bootstrap (with second bootstrap)
+  t1 <- Sys.time()
+  pivot_distr <- par_boott_lomax(theta_hat,boot_distr,n,S2,se2[m],ncores,robust=FALSE)
+  t2 <- Sys.time()
+  res$time[m,3] <- difftime(t2, t1, units = "secs")
+  res$boott[m,] <- c(t(theta_hat - apply(boot_distr,2,sd,na.rm=T) * t(apply(pivot_distr,2,function(x)quantile(x,probs=alpha[2:1],na.rm=T)))))
+
+  # studentized bootstrap (with robust variance)
+  t1 <- Sys.time()
+  pivot_distr_rob <- par_boott_lomax(theta_hat,boot_distr,n,S2,se2[m],ncores,robust=TRUE)
+  t2 <- Sys.time()
+  res$time[m,4] <- difftime(t2, t1, units = "secs")
+  res$boottrob[m,] <- c(t(theta_hat - apply(boot_distr,2,mad,na.rm=T) * t(apply(pivot_distr_rob,2,function(x)quantile(x,probs=alpha[2:1],na.rm=T)))))
+
+  # BCa bootstrap
+  t1 <- Sys.time()
+  res$bca[m,1:2] <- BCa_interval_lomax(boot_distr, y, theta_hat, alpha, 0)
+  res$bca[m,3:4] <- BCa_interval_lomax(boot_distr, y, theta_hat, alpha, 1)
+  t2 <- Sys.time()
+  res$time[m,5] <- difftime(t2, t1, units = "secs")
+
+  # classic
+  res$classic[m,] <- c(t(theta_hat + apply(boot_distr,2,sd,na.rm=T) * matrix(qnorm(p = alpha),nrow=2,ncol=length(theta_hat),byrow=T)))
+  res$classicrob[m,] <- c(t(theta_hat + apply(boot_distr,2,mad,na.rm=T) * matrix(qnorm(p = alpha),nrow=2,ncol=length(theta_hat),byrow=T)))
+
+  # save results
+  save(res, file=paste0("tmp/",assumed_model,"_id_",id_slurm,".rds"))
+  cat(m,"\n")
+}
+

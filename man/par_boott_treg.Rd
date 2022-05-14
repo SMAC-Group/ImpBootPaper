@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{par_boott_treg}
 \alias{par_boott_treg}
-\title{Studentized parametric bootstrap distribution for beta regression}
+\title{Studentized parametric bootstrap distribution for t regression}
 \usage{
 par_boott_treg(theta, boot, x, B, seed, ncores, robust = FALSE)
 }
@@ -22,5 +22,5 @@ par_boott_treg(theta, boot, x, B, seed, ncores, robust = FALSE)
 \item{robust}{if true uses robust estimation of covariance}
 }
 \description{
-Studentized parametric bootstrap distribution for beta regression
+Studentized parametric bootstrap distribution for t regression
 }

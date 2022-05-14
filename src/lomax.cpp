@@ -220,7 +220,6 @@ double mle_lomax::f_grad(
 //' @param maxit maximum number of iteration
 //' @param eps_f tolerance
 //' @param eps_g tolerance
-//' @export
 // [[Rcpp::export]]
 Rcpp::List optim_mle_lomax(
     Eigen::VectorXd& start,
@@ -351,7 +350,6 @@ Rcpp::List of_swiz_lomax(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd swiz_dist_lomax(
     Eigen::VectorXd& pi,
@@ -392,7 +390,6 @@ Eigen::MatrixXd swiz_dist_lomax(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_bootstrap_mle_lomax(
     Eigen::VectorXd& start,
@@ -433,7 +430,6 @@ Eigen::MatrixXd par_bootstrap_mle_lomax(
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
 //' @param robust if true uses robust estimation of covariance
-//' @export
 // [[Rcpp::export]]
 Eigen::MatrixXd par_boott_lomax(
     Eigen::VectorXd& theta,
@@ -476,21 +472,20 @@ Eigen::MatrixXd par_boott_lomax(
 //'
 //' @param start MLE
 //' @param y observations
-//' @param which binary, 0=alpha, 1=lambda
-//' @export
 // [[Rcpp::export]]
-double acceleration_lomax(
+Eigen::VectorXd acceleration_lomax(
     Eigen::VectorXd& start,
-    Eigen::VectorXd& y,
-    unsigned int which // 0 : alpha, 1 : lambda
+    Eigen::VectorXd& y
 ){
   unsigned int n = y.size();
   int maxit = 300;
   double eps_f = 1e-8;
   double eps_g = 1e-7;
-  Eigen::ArrayXd boot(n);
+  Eigen::ArrayXXd u(n,2);
+  Eigen::ArrayXXd uu(n,2);
   Eigen::VectorXd yy(n-1);
-  double t1(0);
+  Eigen::ArrayXd t2(2), t3(2);
+  Eigen::VectorXd acc(2);
 
   for(unsigned int i(0);i<n;++i){
     // I exploit the fact data has no order (iid)
@@ -504,13 +499,18 @@ double acceleration_lomax(
     double fopt;
     mle_lomax f(yy);
     Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
-    boot(i) = std::exp(theta(which));
-    t1 += boot(i) / n;
+    u(i,0) = std::exp(theta(0));
+    u(i,1) = std::exp(theta(1));
   }
-  boot -= t1;
-  double t2 = (boot * boot).sum();
-  double t3 = (boot * boot * boot).sum();
-  return t3 / 6.0 / std::pow(t2, 3/2);
+  for(unsigned int i(0);i<2;++i){
+    uu.col(i) = u.col(i).sum() / n - u.col(i);
+  }
+  uu *= uu;
+  t2 = uu.colwise().sum();
+  uu *= uu;
+  t3 = uu.colwise().sum();
+  acc = t3 / 6.0 / t2.pow(3.0 / 2.0);
+  return acc;
 }
 
 // ------------------

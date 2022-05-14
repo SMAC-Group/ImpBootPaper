@@ -4,14 +4,12 @@
 \alias{acceleration_lomax}
 \title{BCa acceleration parameter for Lomax distribution}
 \usage{
-acceleration_lomax(start, y, which)
+acceleration_lomax(start, y)
 }
 \arguments{
 \item{start}{MLE}
 
 \item{y}{observations}
-
-\item{which}{binary, 0=alpha, 1=lambda}
 }
 \description{
 BCa acceleration parameter for Lomax distribution
