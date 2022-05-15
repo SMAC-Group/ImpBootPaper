@@ -142,7 +142,7 @@ p
 #------------------------
 # Different sample size
 #------------------------
-n <- c(seq(25,200,by=25), seq(250,500,by=50))
+n <- c(seq(25,500,by=25))
 param <- 1
 model <- "lomax"
 coverages1 <- ci_length1 <- coverages2 <- ci_length2 <- matrix(nrow = length(method_name), ncol = length(n))

@@ -4,7 +4,7 @@
 \alias{par_boott_betareg}
 \title{Studentized parametric bootstrap distribution for beta regression}
 \usage{
-par_boott_betareg(theta, boot, x, B, seed, ncores)
+par_boott_betareg(theta, boot, x, B, seed, ncores, robust = FALSE)
 }
 \arguments{
 \item{theta}{initial estimator}
@@ -18,6 +18,8 @@ par_boott_betareg(theta, boot, x, B, seed, ncores)
 \item{seed}{integer representing the state fir random number generation}
 
 \item{ncores}{number of cores (OpenMP parallelisation)}
+
+\item{robust}{if true uses robust estimation of covariance}
 }
 \description{
 Studentized parametric bootstrap distribution for beta regression

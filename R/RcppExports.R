@@ -65,8 +65,9 @@ par_bootstrap_mle_betareg <- function(start, x, B, seed, ncores) {
 #' @param B number of SwiZ estimates
 #' @param seed integer representing the state fir random number generation
 #' @param ncores number of cores (OpenMP parallelisation)
-par_boott_betareg <- function(theta, boot, x, B, seed, ncores) {
-    .Call('_ImpBootPaper_par_boott_betareg', PACKAGE = 'ImpBootPaper', theta, boot, x, B, seed, ncores)
+#' @param robust if true uses robust estimation of covariance
+par_boott_betareg <- function(theta, boot, x, B, seed, ncores, robust = FALSE) {
+    .Call('_ImpBootPaper_par_boott_betareg', PACKAGE = 'ImpBootPaper', theta, boot, x, B, seed, ncores, robust)
 }
 
 #' @title BCa acceleration parameter for beta regression

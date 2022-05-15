@@ -15,6 +15,7 @@ bfgs.control <- function(maxit = 500, eps_f = 1e-10, eps_g = 1e-10){
 #' @title Maximum likelihood estimator
 #' @param y       observations
 #' @param x       matrix of design
+#' @param starting_value starting value for L-BFGS optimization routine
 #' @param model   either "\code{lomax}" for Lomax distribution,
 #' "\code{treg}" for t regression, "\code{betareg}" for beta regression
 #' @param control control for estimation (see \code{\link{bfgs.control}})

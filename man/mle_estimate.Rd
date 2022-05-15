@@ -11,6 +11,8 @@ mle_estimate(y, x = NULL, starting_value, model, control = bfgs.control())
 
 \item{x}{matrix of design}
 
+\item{starting_value}{starting value for L-BFGS optimization routine}
+
 \item{model}{either "\code{lomax}" for Lomax distribution,
 "\code{treg}" for t regression, "\code{betareg}" for beta regression}
 

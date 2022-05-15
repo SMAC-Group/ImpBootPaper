@@ -615,6 +615,7 @@ Eigen::MatrixXd par_bootstrap_mle_betareg(
 //' @param B number of SwiZ estimates
 //' @param seed integer representing the state fir random number generation
 //' @param ncores number of cores (OpenMP parallelisation)
+//' @param robust if true uses robust estimation of covariance
 // [[Rcpp::export]]
 Eigen::MatrixXd par_boott_betareg(
     Eigen::VectorXd& theta,
@@ -622,7 +623,8 @@ Eigen::MatrixXd par_boott_betareg(
     Eigen::MatrixXd& x,
     unsigned int B,
     unsigned int seed,
-    unsigned int ncores
+    unsigned int ncores,
+    bool robust = false
 ){
   unsigned int S = boot.rows();
   unsigned int p = boot.cols();
@@ -635,8 +637,15 @@ Eigen::MatrixXd par_boott_betareg(
     Eigen::MatrixXd new_boot(B,p);
     Eigen::VectorXd start = boot.row(i);
     new_boot = par_bootstrap_mle_betareg(start,x,B,se(i),1);
-    Eigen::MatrixXd cov = covariance(new_boot);
-    Eigen::ArrayXd sd = cov.diagonal().array().sqrt();
+    Eigen::ArrayXd sd(p);
+    if(robust){
+      for(unsigned int j=0;j<p;++j){
+        sd(j) = mad(new_boot.col(j));
+      }
+    } else {
+      Eigen::MatrixXd cov = covariance(new_boot);
+      sd = cov.diagonal().array().sqrt();
+    }
     boott.row(i) = (start - theta).array() / sd;
   }
 

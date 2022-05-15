@@ -103,6 +103,7 @@ parboot_interval <- function(y, x=NULL, initial, boot=NULL, model, alpha=c(.025,
 #' if \code{NULL} it is estimated internally
 #' @param control  see \code{\link{boot.control}}
 #' @return a \code{matrix} levels in rows and MLE in columns
+#' @importFrom stats mad sd
 #' @export
 parboott_interval <- function(y, x=NULL, initial, model, alpha=c(.025, .975), boot=NULL, control=boot.control()){
   # verification

@@ -72,8 +72,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // par_boott_betareg
-Eigen::MatrixXd par_boott_betareg(Eigen::VectorXd& theta, Eigen::MatrixXd& boot, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores);
-RcppExport SEXP _ImpBootPaper_par_boott_betareg(SEXP thetaSEXP, SEXP bootSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP) {
+Eigen::MatrixXd par_boott_betareg(Eigen::VectorXd& theta, Eigen::MatrixXd& boot, Eigen::MatrixXd& x, unsigned int B, unsigned int seed, unsigned int ncores, bool robust);
+RcppExport SEXP _ImpBootPaper_par_boott_betareg(SEXP thetaSEXP, SEXP bootSEXP, SEXP xSEXP, SEXP BSEXP, SEXP seedSEXP, SEXP ncoresSEXP, SEXP robustSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -83,7 +83,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type B(BSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type ncores(ncoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(par_boott_betareg(theta, boot, x, B, seed, ncores));
+    Rcpp::traits::input_parameter< bool >::type robust(robustSEXP);
+    rcpp_result_gen = Rcpp::wrap(par_boott_betareg(theta, boot, x, B, seed, ncores, robust));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -285,7 +286,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ImpBootPaper_optim_mle_betareg", (DL_FUNC) &_ImpBootPaper_optim_mle_betareg, 6},
     {"_ImpBootPaper_swiz_dist_betareg", (DL_FUNC) &_ImpBootPaper_swiz_dist_betareg, 5},
     {"_ImpBootPaper_par_bootstrap_mle_betareg", (DL_FUNC) &_ImpBootPaper_par_bootstrap_mle_betareg, 5},
-    {"_ImpBootPaper_par_boott_betareg", (DL_FUNC) &_ImpBootPaper_par_boott_betareg, 6},
+    {"_ImpBootPaper_par_boott_betareg", (DL_FUNC) &_ImpBootPaper_par_boott_betareg, 7},
     {"_ImpBootPaper_acceleration_betareg", (DL_FUNC) &_ImpBootPaper_acceleration_betareg, 3},
     {"_ImpBootPaper_rlomax", (DL_FUNC) &_ImpBootPaper_rlomax, 4},
     {"_ImpBootPaper_optim_mle_lomax", (DL_FUNC) &_ImpBootPaper_optim_mle_lomax, 5},
