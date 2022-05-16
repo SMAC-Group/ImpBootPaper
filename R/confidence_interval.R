@@ -49,7 +49,7 @@ BCa_interval <- function(y, x=NULL, initial, boot=NULL, model, alpha=c(.025, .97
   if(model == "treg") acc <- acceleration_treg(initial, y, x)
   if(model == "betareg") acc <- acceleration_betareg(initial, y, x)
   zalpha <- qnorm(alpha)
-  z0 <- qnorm(colMeans(boot<initial))
+  z0 <- qnorm(rowMeans(t(boot)<initial))
   ci <- matrix(nrow = length(alpha), ncol = p)
   for(i in seq_len(p)){
     tt <- pnorm(z0[i] + (z0[i] + zalpha) / (1.0 - acc[i] * (z0[i] + zalpha)))
