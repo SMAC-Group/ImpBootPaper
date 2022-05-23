@@ -27,7 +27,7 @@ if(model == "betareg"){
   param <- list(beta = beta,
                 phi = as.double(Sys.getenv("phi")))
 }
-p <- length(unlist(param))
+k <- length(unlist(param))
 
 MC <- 1e4 # Monte Carlo simulations
 # seeds for random generator
@@ -40,15 +40,15 @@ se1 <- sample.int(1e7, MC)
 se2 <- sample.int(1e7, MC)
 se3 <- sample.int(1e7, MC)
 res <- list(
-  implicit = matrix(nrow = MC, ncol = 2 * p),
-  percentile = matrix(nrow = MC, ncol = 2 * p),
-  boott = matrix(nrow = MC, ncol = 2 * p),
-  boottrob = matrix(nrow = MC, ncol = 2 * p),
-  bca = matrix(nrow = MC, ncol = 2 * p),
-  classic = matrix(nrow = MC, ncol = 2 * p),
-  classicrob = matrix(nrow = MC, ncol = 2 * p),
-  time = matrix(nrow = MC, ncol = 6),
-  initial = matrix(nrow = MC, ncol = p)
+  implicit = matrix(nrow = MC, ncol = 2 * k),
+  percentile = matrix(nrow = MC, ncol = 2 * k),
+  boott = matrix(nrow = MC, ncol = 2 * k),
+  boottrob = matrix(nrow = MC, ncol = 2 * k),
+  bca = matrix(nrow = MC, ncol = 2 * k),
+  classic = matrix(nrow = MC, ncol = 2 * k),
+  classicrob = matrix(nrow = MC, ncol = 2 * k),
+  time = matrix(nrow = MC, ncol = 5),
+  initial = matrix(nrow = MC, ncol = k)
 )
 
 #------------------------

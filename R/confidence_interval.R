@@ -189,7 +189,7 @@ asymptotic_interval <- function(y, x=NULL, initial, model, alpha=c(.025, .975), 
     if(model == "treg") boot <- par_bootstrap_mle_treg(initial,x,control$B,control$seed,control$nc)
     if(model == "betareg") boot <- par_bootstrap_mle_betareg(initial,x,control$B,control$seed,control$nc)
   }
-  if(!control$robust) ci <- t(initial + apply(boot,2,sd,na.rm=T) * matrix(qnorm(p = alpha),nrow=2,ncol=length(initial),byrow=T))
-  if(control$robust) ci <- t(initial + apply(boot,2,mad,na.rm=T) * matrix(qnorm(p = alpha),nrow=2,ncol=length(initial),byrow=T))
+  if(!control$robust) ci <- t(initial + apply(boot,2,sd,na.rm=T) * matrix(qnorm(p = alpha),ncol=2,nrow=length(initial),byrow=T))
+  if(control$robust) ci <- t(initial + apply(boot,2,mad,na.rm=T) * matrix(qnorm(p = alpha),ncol=2,nrow=length(initial),byrow=T))
   ci
 }

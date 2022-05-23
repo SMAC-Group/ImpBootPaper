@@ -161,11 +161,13 @@ ds1 <- data.frame(
   Method = rep(method_name, length(n)),
   Sample = rep(n, each = length(method_name))
 )
+ds1 <- subset(ds1, Method != "Studentized (rob)" & Method != "Asymptotic (rob)")
 ds2 <- data.frame(
   Coverage = c(coverages2),
   Method = rep(method_name, length(n)),
   Sample = rep(n, each = length(method_name))
 )
+ds2 <- subset(ds2, Method != "Studentized (rob)" & Method != "Asymptotic (rob)")
 
 ci <- data.frame(
   ymin = binom.test(x=9500,n=1e4,p=.95,conf.level = .99)$conf.int[1],
