@@ -49,7 +49,7 @@ BCa_interval <- function(y, x=NULL, initial, boot=NULL, model, alpha=c(.025, .97
   if(model == "treg") acc <- acceleration_treg(initial, y, x)
   if(model == "betareg") acc <- acceleration_betareg(initial, y, x)
   zalpha <- qnorm(alpha)
-  z0 <- qnorm(rowMeans(t(boot)<initial))
+  z0 <- qnorm(rowMeans(t(boot)<initial, na.rm=TRUE))
   ci <- matrix(nrow = length(alpha), ncol = p)
   for(i in seq_len(p)){
     tt <- pnorm(z0[i] + (z0[i] + zalpha) / (1.0 - acc[i] * (z0[i] + zalpha)))
@@ -105,7 +105,7 @@ parboot_interval <- function(y, x=NULL, initial, boot=NULL, model, alpha=c(.025,
 #' @return a \code{matrix} levels in rows and MLE in columns
 #' @importFrom stats mad sd
 #' @export
-parboott_interval <- function(y, x=NULL, initial, model, alpha=c(.025, .975), boot=NULL, control=boot.control()){
+parboott_interval <- function(y, x=NULL, initial, boot=NULL, model, alpha=c(.025, .975), control=boot.control()){
   # verification
   control <- do.call("boot.control",control)
   if(!is.numeric(y)) stop("'y' must be numeric")
@@ -171,7 +171,7 @@ impboot_interval <- function(y, x=NULL, initial, model, alpha=c(.025, .975), con
 #' @param control  see \code{\link{boot.control}}
 #' @return a \code{matrix} levels in rows and MLE in columns
 #' @export
-asymptotic_interval <- function(y, x=NULL, initial, model, alpha=c(.025, .975), boot=NULL, control=boot.control()){
+asymptotic_interval <- function(y, x=NULL, initial, boot=NULL, model, alpha=c(.025, .975), control=boot.control()){
   # verification
   control <- do.call("boot.control",control)
   if(!is.numeric(y)) stop("'y' must be numeric")

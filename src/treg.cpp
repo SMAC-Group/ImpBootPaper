@@ -567,12 +567,13 @@ Eigen::VectorXd acceleration_treg(
 ){
   unsigned int n = y.size();
   unsigned int p = x.cols();
+  unsigned int k = start.size();
   int maxit = 300;
   double eps_f = 1e-8;
   double eps_g = 1e-7;
-  Eigen::ArrayXXd u(n,p);
-  Eigen::ArrayXXd uu(n,p);
-  Eigen::ArrayXd t2(p), t3(p);
+  Eigen::ArrayXXd u(n,k);
+  Eigen::ArrayXXd uu(n,k);
+  Eigen::ArrayXd t2(k), t3(k);
   Eigen::VectorXd yy(n-1);
   Eigen::MatrixXd xx(n-1,p);
 
@@ -586,16 +587,16 @@ Eigen::VectorXd acceleration_treg(
     }
 
     Eigen::VectorXd theta = start;
-    theta(p-1) = std::log(start(p-1));
-    theta(p-2) = std::log(start(p-2));
+    theta(k-1) = std::log(start(k-1));
+    theta(k-2) = std::log(start(k-2));
     double fopt;
     mle_treg f(yy,xx);
     Numer::optim_lbfgs(f, theta, fopt, maxit, eps_f, eps_g);
     u.row(i) = theta;
-    u(i,p-1) = std::exp(theta(p-1));
-    u(i,p-2) = std::exp(theta(p-2));
+    u(i,k-1) = std::exp(theta(k-1));
+    u(i,k-2) = std::exp(theta(k-2));
   }
-  for(unsigned int i(0);i<p;++i){
+  for(unsigned int i(0);i<k;++i){
     uu.col(i) = u.col(i).sum() / n - u.col(i);
   }
   uu *= uu;

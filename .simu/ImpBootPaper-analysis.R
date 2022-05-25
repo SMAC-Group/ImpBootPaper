@@ -23,7 +23,7 @@ for(i in seq_along(k)){
 ds <- data.frame(
   Coverage = c(coverages),
   Method = rep(method_name, length(k)),
-  Dimension = rep(p, each = length(method_name))
+  Dimension = rep(k, each = length(method_name))
 )
 
 ci <- data.frame(
@@ -47,7 +47,7 @@ p
 ds <- data.frame(
   Length = c(ci_length),
   Method = rep(method_name, length(k)),
-  Dimension = rep(p, each = length(method_name))
+  Dimension = rep(k, each = length(method_name))
 )
 
 p <- ggplot(ds, aes(x = Dimension, y = Length, col = Method)) +

@@ -86,8 +86,8 @@ for(m in na.omit(ind[id_slurm,])){
 
   # percentile bootstrap
   t1 <- Sys.time()
-  boot <- parboot(y, x, theta_hat, model)
-  res$percentile[m,] <- parboot_interval(y, x, theta_hat, boot, model, control = list(seed = se2[m]))
+  boot <- parboot(y, x, theta_hat, model, control = list(seed = se2[m]))
+  res$percentile[m,] <- parboot_interval(y, x, theta_hat, boot, model)
   t2 <- Sys.time()
   res$time[m,2] <- difftime(t2, t1, units = "secs")
 

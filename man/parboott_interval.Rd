@@ -8,9 +8,9 @@ parboott_interval(
   y,
   x = NULL,
   initial,
+  boot = NULL,
   model,
   alpha = c(0.025, 0.975),
-  boot = NULL,
   control = boot.control()
 )
 }
@@ -21,13 +21,13 @@ parboott_interval(
 
 \item{initial}{MLE on observations}
 
+\item{boot}{a \code{matrix} of parametric bootstrap estimates,
+if \code{NULL} it is estimated internally}
+
 \item{model}{either "\code{lomax}" for Lomax distribution,
 "\code{treg}" for t regression, "\code{betareg}" for beta regression}
 
 \item{alpha}{levels}
-
-\item{boot}{a \code{matrix} of parametric bootstrap estimates,
-if \code{NULL} it is estimated internally}
 
 \item{control}{see \code{\link{boot.control}}}
 }
