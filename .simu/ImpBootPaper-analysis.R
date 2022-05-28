@@ -12,11 +12,12 @@ model <- "treg"
 nu <- 3
 k <- seq(5,40,by=5)
 coverages <- ci_length <- matrix(nrow = length(method_name), ncol = length(k))
-id <- 3:4
+id <- 11:12
+beta0 <- 0
 
 for(i in seq_along(k)){
   load(file = paste0(".simu/data/",model,"_n_250_p_",k[i],"_nu_",nu,".rds"))
-  coverages[,i] <- sapply(res[1:5], function(x) mean(apply(x,1,function(y){check_ci(ci=y[id],theta=-1)})=="center",na.rm=T))
+  coverages[,i] <- sapply(res[1:5], function(x) mean(apply(x,1,function(y){check_ci(ci=y[id],theta=beta0)})=="center",na.rm=T))
   ci_length[,i] <- sapply(res[1:5], function(x) median(apply(x,1,function(y){diff(y[id])}),na.rm=T))
 }
 
@@ -40,7 +41,7 @@ p <- ggplot(ds, aes(x = Dimension, y = Coverage, col = Method)) +
   geom_path() +
   theme_bw() +
   theme(text = element_text(size = 20), plot.title = element_text(hjust = 0.5)) +
-  ggtitle(paste0("Parameter: beta1\nSample size: 250\nDegrees of freedom: ",nu)) +
+  ggtitle(paste0("Parameter: beta=",beta0,"\nSample size: 250\nDegrees of freedom: ",nu)) +
   xlab("p")
 p
 
